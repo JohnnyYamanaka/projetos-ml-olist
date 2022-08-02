@@ -144,4 +144,5 @@ cython_debug/
 
 
 *.db
+*.csv
 /olist

@@ -18,8 +18,9 @@ WITH tb_orders_join AS (
 
 tb_orders_join_product_city AS (
     SELECT 
-        DATE(JULIANDAY(t1.order_purchase_timestamp)) AS day_of_purchase,
-        TIME(JULIANDAY(t1.order_purchase_timestamp)) AS hour_of_purchase,
+        t1.order_purchase_timestamp AS date_time_purchase,
+        t4.seller_id,
+        t3.customer_id,
         t1.order_id,
         t1.order_status,
         t1.order_item_id,
@@ -40,11 +41,10 @@ tb_orders_join_product_city AS (
     LEFT JOIN tb_sellers AS t4
         ON t1.seller_id = t4.seller_id
 
-    ORDER BY day_of_purchase, hour_of_purchase, t1.order_id, t1.order_item_id
+    ORDER BY date_time_purchase, t1.order_id, t1.order_item_id
 
 )
 
 SELECT
     *
-FROM tb_orders_join_product_city
-;
+FROM tb_orders_join_product_city;
