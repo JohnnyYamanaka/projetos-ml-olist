@@ -29,7 +29,9 @@ tb_orders_join_product_city AS (
         t1.price,
         t1.freight_value,        
         t3.customer_city,
-        t4.seller_city
+        t3.customer_state,
+        t4.seller_city,
+        t4.seller_state
         
     FROM tb_orders_join AS t1
     LEFT JOIN tb_products AS t2
