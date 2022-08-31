@@ -20,7 +20,7 @@ A consulta pode ser incrementada se durante a exploração dos dados achar que p
 A execução desse projeto seguiu a metodologia CRISP-DM:
 
 * [Entendimento dos dados](#entendimento-dos-dados);
-* Preparação dos dados para modelagem;
+* [Preparação dos dados para modelagem](#preparação-dos-dados);
 * Modelagem;
 * Avaliação do desempenho.
   
@@ -34,3 +34,15 @@ Alguns dos principais insights da análise foram:
 * Existe uma tendência positiva nas vendas - ao longo da série o faturamento vai crescendo, mesmo que seja lentamente;
 * A black friday de 2017 impactou positivamente o negócio - além do recorde de vendas do período observado, a partir deste ponto o faturamento passou a ficar acima da média de faturamento do período (mesmo com a queda do final do ano).
 
+## Preparação dos dados
+Antes de realizar a modelagem, foi acrescentado mais algumas features através da classe [`FeatureEngineering`](helpers/feature_engineering.py), que podem ser interessante para o nosso problema. Entre eles:
+* `is_holiday`: indica se naquela data foi comemorado algum feriado;
+* `is_commercial_day`: indica se naquela data existiu alguma data relevante para o varejo, como dia dos pais, blackfriday, dia dos namorados e etc;
+* `day_of_week`: indica o dia da semana (0 para segunda feira e 7 para domingo);
+* `day_of_month`: indica o dia do mês;
+* `day_of_year`: indica o dia do ano;
+* `moving_average`: as médias móveis das vendas (período de 7, 14 e 21 dias);
+* `diff_yesterday_sales`: a diferença de venda em relação ao dia anterior;
+* `lag_sales`: indica o número de venda passada de um determinado período. Foi testado o período de 1, 7, 14, 21 e 28 dias.
+
+A avaliação da utilizade das features será realizada na etapa de modelagem.

@@ -2,6 +2,8 @@
 import findspark
 findspark.init()
 
+import pandas as pd
+
 from pyspark.sql import SparkSession
 from pyspark.sql.types import *
 from pyspark.sql import functions as f
@@ -33,14 +35,14 @@ schema = StructType([
 ])
 
 # %%
-path_csv = '../../dados/forecast_query.csv'
+path_csv = '../dados/forecast_query.csv'
 
-df = spark.read.csv(
-    path_csv,
-    inferSchema=True,
-    header=True,
-    schema=schema
-)
+# df = spark.read.csv(
+#     path_csv,
+#     inferSchema=True,
+#     header=True,
+#     schema=schema
+# )
 
 # %%
 class DataPreparation():
@@ -70,7 +72,7 @@ class DataPreparation():
             .agg(
                 f.sum('price').alias('total_value'),
                 f.sum('freight_value').alias('total_freight'),
-                f.first('customer_state').alias('customer_state')
+                # f.first('customer_state').alias('customer_state')
             )
 
         if consolidate == True:
@@ -89,7 +91,7 @@ class DataPreparation():
                             'order_id', 'order_status', 
                             'order_item_id', 'product_id',
                             'product_category_name', 'customer_city', 
-                            'seller_city', 'seller_state']
+                            'seller_city', 'seller_state', 'total_freight']
 
         self.dataframe = self.dataframe\
             .drop(*(columns_to_drop))
@@ -115,8 +117,13 @@ class DataPreparation():
         df_validacao = df.select('*')\
             .where('day_of_purchase >= "2018-03-01"')
 
-        df_train = df_train.toPandas().set_index('day_of_purchase')
-        df_validacao = df_validacao.toPandas().set_index('day_of_purchase')
+        # df_train = df_train.toPandas().set_index('day_of_purchase')
+        # df_validacao = df_validacao.toPandas().set_index('day_of_purchase')
+        df_train = df_train.toPandas()
+        df_validacao = df_validacao.toPandas()
+
+        df_train['day_of_purchase'] = pd.to_datetime(df_train['day_of_purchase'])
+        df_validacao['day_of_purchase'] = pd.to_datetime(df_validacao['day_of_purchase'])
 
         return df_train, df_validacao
 
@@ -136,3 +143,18 @@ class DataPreparation():
         
 
         return df_train, df_validacao
+
+def load_and_transform(consolidate: bool = False):
+    df = spark.read.csv(
+                path_csv,
+                inferSchema=True,
+                header=True,
+                schema=schema
+    )
+    
+    data_prep = DataPreparation(df)
+    df_train, df_validacao = data_prep.transform(consolidate)
+
+    spark.stop()
+    
+    return df_train, df_validacao
